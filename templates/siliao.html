@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>群聊</title>
+</head>
+<body>
+我的昵称:<input type="text" id="username">
+<button id="login">登录</button>
+<p>
+    给<input type="text" id="to_user">发送
+    <input type="text" id="content">
+    <button id="send_msg" >发送</button> <!--给按钮绑定点击事件-->
+</p>
+
+<div id="chat_list">
+
+</div>
+</body>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.4.1.min.js"></script>
+<script type="application/javascript">
+    var ws = null; // 创建全局变量,ws多处使用
+
+    $("#login").click(function () {
+         var username = $("#username").val();
+         console.log(username);
+         // 创建一个websocket对象,建立websocket连接,更改了全局的ws,将用户名拼接上
+         ws = new WebSocket("ws://localhost:5000/my_socket/" + username);
+        console.log(ws);
+        // 监听后端发来的消息,ws.onmessage起到监听的作用,只要有消息过来函数会自动执行
+        ws.onmessage = function (eventMessage) {
+            console.log(eventMessage.data);       // 获取后端发来的消息
+            var str_obj = JSON.parse(eventMessage.data);  // 反序列化,因为我们在发送给后端的时候是json
+            var p = document.createElement("p"); // 创建一个p标签
+            $(p).text(str_obj.from_user +":"+str_obj.chat);     // 将dom对象转换成jQuery对象,将后端发来的数据添加到p标签内
+            $("#chat_list").append(p)            // 将p标签添加到div内
+        };
+    });
+
+    // 将我们输入的内容发送给后端
+    $("#send_msg").click(function () {
+        var content = $("#content").val();
+        var username = $("#username").val();
+        var to_user = $("#to_user").val();
+        // 将要发送的内容封装成自定义对象
+        var sendStr = {
+            from_user:username,
+            chat:content,
+            to_user:to_user,
+        };
+        console.log(sendStr);
+        // 序列化后发送给后端
+        console.log(ws);
+        ws.send(JSON.stringify(sendStr));
+    });
+</script>
+</html>

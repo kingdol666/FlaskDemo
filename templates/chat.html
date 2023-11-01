@@ -1,0 +1,47 @@
+<!-- 聊天室页面 -->
+<html>
+<head>
+    <title>Chat Room</title>
+    <!-- 引入socket.io客户端库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <h1>Chat Room</h1>
+    <!-- 显示聊天记录的区域 -->
+    <div id="chat"></div>
+    <!-- 输入消息的文本框 -->
+    <input id="text" type="text">
+    <!-- 发送消息的按钮 -->
+    <button id="send">Send</button>
+    <!-- 发送JSON数据的按钮 -->
+    <button id="send_json">Send JSON</button>
+    <script>
+        // 创建socket对象，连接服务器端
+        var socket = io();
+        // 获取页面元素
+        var chat = document.getElementById("chat");
+        var text = document.getElementById("text");
+        var send = document.getElementById("send");
+        var send_json = document.getElementById("send_json");
+        // 监听message事件，接收服务器端发送的消息，并显示在聊天记录中
+        socket.on('message', function(message) {
+            chat.innerHTML += '<p>' + message + '</p>';
+        });
+        // 监听json事件，接收服务器端发送的数据，并显示在聊天记录中
+        socket.on('json', function(json) {
+            chat.innerHTML += '<p>' + JSON.stringify(json) + '</p>';
+        });
+        // 监听send按钮的点击事件，获取文本框中的内容，并发送message事件给服务器端
+        send.addEventListener('click', function() {
+            var message = text.value;
+            socket.emit('message', message);
+            text.value = '';
+        });
+        // 监听send_json按钮的点击事件，并发送json事件给服务器端
+        send_json.addEventListener('click', function() {
+            var json = {name: 'Alice', age: 18};
+            socket.emit('json', json);
+        });
+    </script>
+</body>
+</html>
