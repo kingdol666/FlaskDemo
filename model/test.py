@@ -1,9 +1,9 @@
-import domain.model.SparkApi as SparkApi
+from FlaskDemo.model import SparkApi
 
 # 以下密钥信息从控制台获取
-appid = ""  # 填写控制台中获取的 APPID 信息
-api_secret = ""  # 填写控制台中获取的 APISecret 信息
-api_key = ""  # 填写控制台中获取的 APIKey 信息
+appid = "12ddc6cd"  # 填写控制台中获取的 APPID 信息
+api_secret = "ODc2YmNhYmE4Y2M2NzQ4MzZmYzYxM2E3"  # 填写控制台中获取的 APISecret 信息
+api_key = "dd83233f1bb94964b2d572cc1140deb5"  # 填写控制台中获取的 APIKey 信息
 
 # 用于配置大模型版本，默认“general/generalv2”
 domain = "generalv3"  # v1.5版本

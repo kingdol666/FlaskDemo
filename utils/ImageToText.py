@@ -1,17 +1,22 @@
-from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
+from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer, GenerationConfig
 import torch
 from PIL import Image
-model_path = "./HuggingFaceModel/vit-gpt2-image-captioning"
+
+model_path = "./vit-gpt2-image-captioning"
 model = VisionEncoderDecoderModel.from_pretrained(model_path)
 feature_extractor = ViTImageProcessor.from_pretrained(model_path)
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-
+generation_config = GenerationConfig(
+    do_sample=True,
+    temperature=0.9  # This value can be adjusted as necessary
+)
 max_length = 16
 num_beams = 4
 gen_kwargs = {"max_length": max_length, "num_beams": num_beams}
+print("Image generation configuration Success")
 
 
 def predict_step(image_paths):
@@ -26,9 +31,8 @@ def predict_step(image_paths):
     pixel_values = feature_extractor(images=images, return_tensors="pt").pixel_values
     pixel_values = pixel_values.to(device)
 
-    output_ids = model.generate(pixel_values, **gen_kwargs)
+    output_ids = model.generate(pixel_values, **gen_kwargs, do_sample=True)
 
     preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
     preds = [pred.strip() for pred in preds]
     return preds
-
